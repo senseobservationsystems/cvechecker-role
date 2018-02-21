@@ -1,0 +1,24 @@
+#!/bin/bash
+
+rm -rf /tmp/cvereport
+mkdir /tmp/cvereport
+
+if [ -x /usr/local/bin/pullcves ]; then
+    /usr/local/bin/pullcves pull > /tmp/checkCVE-result.txt
+fi
+
+#if [ -x /usr/local/bin/cvechecker ]; then
+#    /usr/local/bin/cvechecker -r -C >> /tmp/checkCVE-result.txt
+#fi
+
+if [ -x /usr/local/bin/cvereport ]; then
+    /usr/local/bin/cvereport -d /tmp/cvereport /usr/local/share/cvechecker/acknowledgements.xml > /tmp/checkCVE-result.txt
+fi
+
+tar czf /tmp/cvereport-$HOSTNAME.tar.gz -C /tmp/cvereport .
+mail -s "CVE Checker Report -  ${HOSTNAME}" -A /tmp/cvereport-$HOSTNAME.tar.gz {{ cvechecker_email }}  < /tmp/checkCVE-result.txt
+
+rm -rf /tmp/cvereport
+rm /tmp/cvereport-$HOSTNAME.tar.gz
+rm /tmp/checkCVE-result.txt
+#rm /tmp/cvechecker-result.txt

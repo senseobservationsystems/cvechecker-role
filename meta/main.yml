@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Taufik Hidayat
+  description: An Ansible Role for CVE Checker
+  company: Sense Health BV
+  license: Apache
+  min_ansible_version: 1.2
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  galaxy_tags:
+    - cvechecker
+dependencies: 
+  - manala.make

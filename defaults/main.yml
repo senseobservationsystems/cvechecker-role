@@ -1,0 +1,4 @@
+---
+# defaults file for cvechecker
+cvechecker_version: 3.8
+cvechecker_email: backend@sense-os.nl

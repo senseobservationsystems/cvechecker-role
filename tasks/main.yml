@@ -1,0 +1,57 @@
+---
+# tasks file for cvechecker
+- name: Download cvechecker tarball
+  get_url:
+    url: "https://raw.githubusercontent.com/wiki/sjvermeu/cvechecker/releases/cvechecker-{{ cvechecker_version }}.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+- name: Extract downloaded cvechecker
+  unarchive:
+    src: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+- name: install libconfig-dev
+  apt:
+    name: libconfig-dev
+    update_cache: yes
+- name: install xsltproc
+  apt:
+    name: xsltproc
+    update_cache: yes
+- name: install sqlite3
+  apt:
+    name: sqlite3
+    update_cache: yes
+- name: install libsqlite3-dev
+  apt:
+    name: libsqlite3-dev
+    update_cache: yes
+- name: Configure cvechecker
+  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} ./configure
+- name: Build cvechecker
+  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} make
+- name: Install cvechecker
+  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} make install
+- name: Put cvechecker on right directory
+  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} make postinstall
+- name: Put cvechecker data to specific directory
+  command: cp -r {{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}/data/. /usr/local/share/cvechecker
+- name: create cve checker scripts
+  template:
+    src: checkCVE.sh.j2
+    dest: /usr/local/bin/checkCVE.sh
+    owner: root
+    group: root
+    mode: '700'
+- name: install mailutils
+  apt:
+    name: mailutils
+    update_cache: yes
+- name: setup cron for cve checker
+  cron:
+    name: "CVE Checker weekly setup"
+    minute: 0
+    hour: 1
+    day: '*'
+    month: '*'
+    weekday: 0
+    job: "/usr/bin/ionice -c3 /usr/local/bin/checkCVE.sh"
