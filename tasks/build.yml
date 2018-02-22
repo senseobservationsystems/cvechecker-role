@@ -42,8 +42,5 @@
   command: make postinstall
   args:
     chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
-    creates: /usr/local/bin/cvereport
 - name: Put cvechecker data to specific directory
   command: cp -r {{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}/data/. /usr/local/share/cvechecker
-  args:
-    creates: /usr/local/share/cvechecker
