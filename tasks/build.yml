@@ -1,0 +1,49 @@
+- name: Download cvechecker tarball
+  get_url:
+    url: "https://raw.githubusercontent.com/wiki/sjvermeu/cvechecker/releases/cvechecker-{{ cvechecker_version }}.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+- name: Extract downloaded cvechecker
+  unarchive:
+    src: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+- name: install libconfig-dev
+  apt:
+    name: libconfig-dev
+    update_cache: yes
+- name: install xsltproc
+  apt:
+    name: xsltproc
+    update_cache: yes
+- name: install sqlite3
+  apt:
+    name: sqlite3
+    update_cache: yes
+- name: install libsqlite3-dev
+  apt:
+    name: libsqlite3-dev
+    update_cache: yes
+- name: Configure cvechecker
+  command: ./configure
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
+- name: Build cvechecker
+  command: make
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
+- name: Install cvechecker
+  command: make install
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
+- name: Put cvechecker on right directory
+  command: make postinstall
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
+- name: Put cvechecker data to specific directory
+  command: cp -r {{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}/data/. /usr/local/share/cvechecker
+  args:
+    creates: /usr/local/share/cvechecker
