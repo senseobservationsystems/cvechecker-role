@@ -26,15 +26,29 @@
     name: libsqlite3-dev
     update_cache: yes
 - name: Configure cvechecker
-  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} ./configure
+  command: ./configure
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
 - name: Build cvechecker
-  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} make
+  command: make
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
 - name: Install cvechecker
-  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} make install
+  command: make install
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
 - name: Put cvechecker on right directory
-  command: chdir={{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }} make postinstall
+  command: make postinstall
+  args:
+    chdir: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}"
+    creates: /usr/local/bin/cvereport
 - name: Put cvechecker data to specific directory
   command: cp -r {{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}/data/. /usr/local/share/cvechecker
+  args:
+    creates: /usr/local/share/cvechecker
 - name: create cve checker scripts
   template:
     src: checkCVE.sh.j2
