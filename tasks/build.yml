@@ -7,6 +7,10 @@
     src: "{{ ansible_env.HOME }}/cvechecker-{{ cvechecker_version }}.tar.gz"
     dest: "{{ ansible_env.HOME }}"
     remote_src: yes
+- name: install build-essential
+  apt:
+    name: build-essential
+    update_cache: yes
 - name: install libconfig-dev
   apt:
     name: libconfig-dev
